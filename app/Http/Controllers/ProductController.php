@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Designer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class ProductController extends Controller
 {
@@ -53,7 +55,7 @@ class ProductController extends Controller
         // $file->file_path = $filePath;
         // $file->file_name = $originalFileName;
 
-        $product = Product::create($input);
+        Product::create($input);
 
         return redirect()->back();
     }
@@ -63,7 +65,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return $product;
+        // return $product;
     }
 
     /**
@@ -71,7 +73,11 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $designers = Designer::all();
+
+        $categories = Category::all();
+
+        return view('dashboard.products.edit', compact('product', 'designers', 'categories'));
     }
 
     /**
@@ -79,7 +85,32 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $input = $request->all();
+
+        if (isset($request->picture)) {
+
+            $uploaded_file = $request->picture;
+
+            $originalFileName = pathinfo($uploaded_file->getClientOriginalName(), PATHINFO_FILENAME);
+            $fileName = preg_replace('/\s+/', '', $originalFileName) . '-' . uniqid() . '.' . $uploaded_file->getClientOriginalExtension();
+            $uploaded_file->storeAs('public/uploads/', $fileName);
+
+            $filePath = 'uploads/' . $fileName;
+
+            $input['image'] = $filePath;
+
+            unset($input['picture']);
+
+            if (Storage::exists('public/' . $product->image)) {
+                Storage::delete('public/' . $product->image);
+            }
+        }
+
+        // Product::create($input);
+
+        $product->update($input);
+
+        return redirect()->route('products.index');
     }
 
     /**

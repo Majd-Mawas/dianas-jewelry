@@ -20,9 +20,10 @@
                                 <th scope="col">Price</th>
                                 <th scope="col">Weight</th>
                                 <th scope="col">Material</th>
+                                <th scope="col">Condition</th>
                                 <th scope="col">Designer</th>
                                 <th scope="col">Category</th>
-                                <th scope="col">Description</th>
+                                {{-- <th scope="col">Description</th> --}}
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -39,15 +40,20 @@
                                     <td>{{ $product->price }}</td>
                                     <td>{{ $product->weight }}</td>
                                     <td>{{ $product->material }}</td>
+                                    <td>{{ $product->condition }}</td>
                                     <td>{{ $product?->designer?->name }}</td>
                                     <td>{{ $product?->category?->name }}</td>
-                                    <td style="overflow-y: scroll; max-width: 250px;">
-                                        {{ $product->description }}</td>
+                                    {{-- <td style="overflow-y: scroll; max-width: 250px;">
+                                        {{ $product->description }}</td> --}}
 
                                     <td class="text-left">
 
+                                        <a href="{{ route('products.edit', ['product' => $product->id]) }}">
+                                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                        </a>
+
                                         <form action="{{ route('products.destroy', ['product' => $product->id]) }}"
-                                            method="POST" style="display: inline;">
+                                            method="POST" style="display: inline; margin-inline: 0.5rem">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -102,6 +108,16 @@
                             <label for="material">Material</label>
                             <input type="text" class="form-control" id="material" placeholder="Enter Material"
                                 name="material" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="condition">Condition</label>
+                            <select class="form-control" id="condition" name="condition" required>
+                                <option hidden selected></option>
+                                <option value="New">New</option>
+                                <option value="Used">Used</option>
+
+                            </select>
                         </div>
 
                         <div class="form-group">

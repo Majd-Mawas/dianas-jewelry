@@ -14,7 +14,7 @@ class ShippingController extends Controller
     public function index()
     {
         $shippings = Shipping::all();
-        $orders = Order::whereNull('shipping_id')->get();
+        $orders = Order::whereNull('shipping_id')->whereStatus('orderd')->get();
 
         return view('dashboard.shipping.index', compact('shippings', 'orders'));
     }
@@ -32,7 +32,19 @@ class ShippingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+
+        $order = Order::findOrFail($input['order']);
+        unset($input['order']);
+
+        $shipping = Shipping::create($input);
+
+        $order->shipping_id = $shipping->id;
+        $order->status = 'shipped';
+
+        $order->save();
+
+        return redirect()->back();
     }
 
     /**
@@ -65,5 +77,18 @@ class ShippingController extends Controller
     public function destroy(Shipping $shipping)
     {
         //
+    }
+
+    public function confirm($id)
+    {
+        $shipping = Shipping::findOrFail($id);
+        $shipping->is_delivered = true;
+        $shipping->save();
+
+        $order = $shipping->order;
+        $order->status = 'delivered';
+        $order->save();
+
+        return redirect()->back();
     }
 }

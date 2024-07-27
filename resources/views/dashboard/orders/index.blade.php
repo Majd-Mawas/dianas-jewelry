@@ -28,7 +28,7 @@
                                     <td>{{ $order->date }}</td>
                                     <td>{{ $order->status }}</td>
                                     <td>{{ $order->total_amount }}</td>
-                                    <td>{{ $order?->payment?->type }}</td>
+                                    <td>{{ $order?->payment?->type ?? 'cash on delivery' }}</td>
                                     <td>{{ $order?->customer?->name }}</td>
                                     <td style="width: 30px">
 

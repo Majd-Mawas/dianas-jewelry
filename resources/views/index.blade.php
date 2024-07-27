@@ -13,6 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
+    <link rel="shortcut icon" href="{{ asset('images/logos.png') }}" type="image/x-icon">
     <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
  <![endif]-->
@@ -49,12 +50,12 @@
         <div class="container">
             <div class="trigger"></div>
             <ul>
-                <li><a href="products.html">New collection</a></li>
-                <li><a href="products.html">necklaces</a></li>
-                <li><a href="products.html">earrings</a></li>
-                <li><a href="products.html">Rings</a></li>
-                <li><a href="products.html">Gift cards</a></li>
-                <li><a href="products.html">Promotions</a></li>
+                <li><a href="{{ route('list_products') }}">New collection</a></li>
+                <li><a href="{{ route('list_products', ['cat' => 'necklaces']) }}">necklaces</a></li>
+                <li><a href="{{ route('list_products', ['cat' => 'earrings']) }}">earrings</a></li>
+                <li><a href="{{ route('list_products', ['cat' => 'Rings']) }}">Rings</a></li>
+                {{-- <li><a href="{{ route('list_products', ['cat' => 'Gift cards']) }}">Gift cards</a></li> --}}
+                {{-- <li><a href="{{ route('list_products', ['cat' => 'Promotions']) }}">Promotions</a></li> --}}
             </ul>
         </div>
         <!-- / container -->

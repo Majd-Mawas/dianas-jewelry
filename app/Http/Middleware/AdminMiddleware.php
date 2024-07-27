@@ -4,7 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
+use App\Providers\RouteServiceProvider;
 
 class AdminMiddleware
 {
@@ -13,13 +14,12 @@ class AdminMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        if (auth()->user()->type == 'admin') {
-
+        if (Auth::check() && Auth::user()->type == 'admin') {
             return $next($request);
         } else {
-            return redirect()->to('/');
+            return redirect(RouteServiceProvider::HOME);
         }
     }
 }

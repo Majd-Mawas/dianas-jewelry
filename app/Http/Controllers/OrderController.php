@@ -68,7 +68,7 @@ class OrderController extends Controller
     public function finalize($id)
     {
         $order = Order::findOrFail($id);
-        $order->status = 'shipped';
+        $order->status = 'orderd';
         $order->save();
 
         return redirect()->to('/');

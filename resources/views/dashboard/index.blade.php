@@ -11,7 +11,7 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> --}}
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
         integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-
+    <link rel="shortcut icon" href="{{ asset('images/logos.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <title>Dashboard Dianas</title>
 </head>
@@ -20,6 +20,11 @@
     <div class="container-fluid display-table">
         <div class="row display-table-row">
             <div class="col-md-2 col-sm-1 hidden-xs display-table-cell v-align box" id="navigation">
+                <div class="logo">
+                    <img src="{{ asset('images/logo@2x-light.png') }}" alt="dianas_logo" class="hidden-xs hidden-sm">
+                    <img src="{{ asset('images/logos.png') }}" alt="dianas_logo"
+                        class="visible-xs visible-sm circle-logo">
+                </div>
                 <div class="navi">
                     <ul>
                         <li class="@if (Request::is('dashboard')) active @endif"><a
@@ -37,9 +42,6 @@
                         <li class="@if (Request::is('dashboard/designers')) active @endif"><a
                                 href="{{ route('designers.index') }}"><i class="fa fa-paint-brush"
                                     aria-hidden="true"></i><span class="hidden-xs hidden-sm">Designers</span></a></li>
-                        <li class="@if (Request::is('dashboard/categories')) active @endif"><a
-                                href="{{ route('categories.index') }}"><i class="fa fa-list"
-                                    aria-hidden="true"></i><span class="hidden-xs hidden-sm">Categories</span></a></li>
                         <li class="@if (Request::is('dashboard/shipping')) active @endif"><a
                                 href="{{ route('shipping.index') }}"><i class="fa fa-truck" aria-hidden="true"></i><span
                                     class="hidden-xs hidden-sm">Shipping</span></a></li>
@@ -67,9 +69,9 @@
                         <div class="col-md-5">
                             <div class="header-rightside">
                                 <ul class="list-inline header-top pull-right">
-                                    <li class="hidden-xs"><a href="#" class="add-project" data-toggle="modal"
+                                    {{-- <li class="hidden-xs"><a href="#" class="add-project" data-toggle="modal"
                                             data-target="#add_project"> Add
-                                            Admin</a></li>
+                                            Admin</a></li> --}}
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                             <i class="fa fa-user"></i>
@@ -109,32 +111,6 @@
 
     </div>
 
-
-
-    <!-- Modal -->
-    <div id="add_project" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header login-header">
-                    <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h4 class="modal-title">Add Project</h4>
-                </div>
-                <div class="modal-body">
-                    <input type="text" placeholder="Project Title" name="name">
-                    <input type="text" placeholder="Post of Post" name="mail">
-                    <input type="text" placeholder="Author" name="passsword">
-                    <textarea placeholder="Desicrption"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="cancel" data-dismiss="modal">Close</button>
-                    <button type="button" class="add-project" data-dismiss="modal">Save</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Product;
+use App\Models\Order;
 
 class HomeController extends Controller
 {
@@ -30,14 +32,31 @@ class HomeController extends Controller
 
     public function landing()
     {
-        $latest_products = Product::OrderByDesc('created_at')->limit(5)->get();
+        $latest_products = Product::OrderByDesc('created_at')->limit(10)->get();
 
         return view('index', compact('latest_products'));
     }
 
     public function dashboard()
     {
-        return view('dashboard.home.index');
+        $top_orders = Order::orderByDesc('total_amount')->get();
+
+        $top_products = DB::table('items')
+            ->select('product_id', DB::raw('COUNT(product_id) as order_count'))
+            ->groupBy('product_id')
+            ->orderByDesc('order_count')
+            ->take(10)
+            ->get();
+
+        $product_ids = $top_products->pluck('product_id');
+        $products = Product::whereIn('id', $product_ids)->get();
+
+        $products = $products->map(function ($product) use ($top_products) {
+            $product->order_count = $top_products->firstWhere('product_id', $product->id)->order_count;
+            return $product;
+        });
+
+        return view('dashboard.home.index', compact('top_orders', 'products'));
     }
     public function product($id)
     {
@@ -45,13 +64,33 @@ class HomeController extends Controller
 
         return view('product', compact('product'));
     }
-    public function products()
+    public function products(Request $request, $cat = null)
     {
-        // $product = Product::findOrFail($id);
+        // return $request;
+        $query = Product::query();
 
-        return view('products');
+        if ($cat) {
+            $category = Category::whereName($cat)->first();
+            $query->where('category_id', $category->id);
+        }
+
+        // Filter by products per page
+        $perPage = $request->input('per_page', 8);
+
+        // Filter by condition
+        if ($request->has('condition')) {
+            $query->whereIn('condition', $request->input('condition'));
+        }
+
+        // Filter by price range
+        if ($request->has('min_price') && $request->has('max_price')) {
+            $query->whereBetween('price', [$request->input('min_price'), $request->input('max_price')]);
+        }
+
+        $products = $query->orderByDesc('id')->paginate($perPage);
+
+        return view('products', compact('products'));
     }
-
     public function cart()
     {
         $cart = auth()->user()->cart;

@@ -19,6 +19,7 @@
                                 <th scope="col">Type</th>
                                 <th scope="col">Est.Delivery Time</th>
                                 <th scope="col">Order</th>
+                                <th scope="col">Delivered</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -27,17 +28,20 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
 
-                                    <td>{{ $shipping->name }}</td>
-                                    <td>{{ $shipping->price }}</td>
-                                    <td>{{ $shipping->weight }}</td>
-                                    <td>{{ $shipping->material }}</td>
-                                    <td style="overflow-y: scroll; max-width: 250px;">
-                                        {{ $shipping->description }}</td>
+                                    <td>{{ $shipping->cost }}</td>
+                                    <td>{{ $shipping->type }}</td>
+                                    <td>{{ $shipping->estimated_delivery_time }}</td>
+                                    <td>{{ $shipping->order->serial }}</td>
+                                    <td>{{ $shipping->is_delivered ? 'Yes' : 'No' }}</td>
 
                                     <td class="text-left">
-
+                                        @if (!$shipping->is_delivered)
+                                            <a href="{{ route('confirm', ['id' => $shipping->id]) }}">
+                                                <i class="fa fa-check-square-o" aria-hidden="true"></i>
+                                            </a>
+                                        @endif
                                         <form action="{{ route('shipping.destroy', ['shipping' => $shipping->id]) }}"
-                                            method="POST" style="display: inline;">
+                                            method="POST" style="display: inline; margin-inline: 1rem">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -77,11 +81,13 @@
                             <input type="number" class="form-control" id="cost" placeholder="Enter Cost"
                                 name="cost" step="0.1" required>
                         </div>
+
                         <div class="form-group">
                             <label for="type">Type</label>
                             <input type="text" class="form-control" id="type" placeholder="Enter Type"
-                                name="type" required>
+                                name="type" required value="Boat Shipping">
                         </div>
+
                         <div class="form-group">
                             <label for="estimated_delivery_time">Est.Delivery Time</label>
                             <input type="number" class="form-control" id="estimated_delivery_time"
@@ -89,10 +95,16 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="shipping_address">User Shipping Address</label>
+                            <input type="text" class="form-control" id="shipping_address" placeholder="Shipping Address"
+                                name="shipping_address" required>
+                        </div>
+
+                        <div class="form-group">
                             <label for="order">Order</label>
-                            <select class="form-control" id="order" required>
+                            <select class="form-control" id="order" required name="order">
                                 <option hidden selected></option>
-                                @foreach ($orders as $oredr)
+                                @foreach ($orders as $order)
                                     <option value="{{ $order->id }}">{{ $order->serial }}</option>
                                 @endforeach
                             </select>

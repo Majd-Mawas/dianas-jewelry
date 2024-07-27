@@ -26,17 +26,17 @@ use App\Http\Controllers\ShippingController;
 
 Auth::routes();
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::controller(HomeController::class)->group(function () {
         Route::get('/', 'landing');
         Route::get('/cart',  'cart')->name('cart');
         Route::get('/product/{id}',  'product')->name('show_product');
-        Route::get('/products',  'products')->name('list_products');
+        Route::get('/products/{cat?}',  'products')->name('list_products');
     });
 
 
-    Route::middleware('admin')->group(function () {
+    Route::middleware(['admin'])->group(function () {
         Route::prefix('dashboard')->group(function () {
             Route::resource('users', UserController::class);
             Route::resource('products', ProductController::class);
@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
+        Route::get('/shipping/confirm/{id}', [ShippingController::class, 'confirm'])->name('confirm');
     });
 
     Route::resource('items', ItemController::class);
@@ -57,9 +58,4 @@ Route::middleware('auth')->group(function () {
         Route::post('orders', 'store');
         Route::get('order/finalize/{id}', 'finalize')->name('finalize');
     });
-    // Route::controller(ItemController::class)->group(function () {
-    // });
-});
-
-Route::controller(UserController::class)->group(function () {
 });

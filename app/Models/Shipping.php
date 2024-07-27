@@ -10,8 +10,8 @@ class Shipping extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function orders()
+    public function order()
     {
-        return $this->hasMany(Order::class, 'shipping_id');
+        return $this->hasOne(Order::class, 'shipping_id');
     }
 }

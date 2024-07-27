@@ -13,14 +13,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        @foreach ($users as $index => $user)
+                    @foreach ($users as $index => $user)
+                        <tr>
                             <th scope="row">{{ $index + 1 }}</th>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->type }}</td>
-                        @endforeach
-                    </tr>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>

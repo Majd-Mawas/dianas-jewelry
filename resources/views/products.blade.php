@@ -10,10 +10,17 @@
         content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <link rel="stylesheet" media="all" href="{{ asset('css/style.css') }}">
 
+    <link rel="shortcut icon" href="{{ asset('images/logos.png') }}" type="image/x-icon">
     <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
  <![endif]-->
 </head>
+
+<style>
+    .container>.pagination {
+        display: none !important;
+    }
+</style>
 
 <body>
 
@@ -46,12 +53,12 @@
         <div class="container">
             <div class="trigger"></div>
             <ul>
-                <li><a href="products.html">New collection</a></li>
-                <li><a href="products.html">necklaces</a></li>
-                <li><a href="products.html">earrings</a></li>
-                <li><a href="products.html">Rings</a></li>
-                <li><a href="products.html">Gift cards</a></li>
-                <li><a href="products.html">Promotions</a></li>
+                <li><a href="{{ route('list_products') }}">New collection</a></li>
+                <li><a href="{{ route('list_products', ['cat' => 'necklaces']) }}">necklaces</a></li>
+                <li><a href="{{ route('list_products', ['cat' => 'earrings']) }}">earrings</a></li>
+                <li><a href="{{ route('list_products', ['cat' => 'Rings']) }}">Rings</a></li>
+                {{-- <li><a href="{{ route('list_products', ['cat' => 'Gift cards']) }}">Gift cards</a></li> --}}
+                {{-- <li><a href="{{ route('list_products', ['cat' => 'Promotions']) }}">Promotions</a></li> --}}
             </ul>
         </div>
         <!-- / container -->
@@ -71,7 +78,7 @@
 
     <div id="body">
         <div class="container">
-            <div class="pagination">
+            {{-- <div class="pagination">
                 <ul>
                     <li><a href="#"><span class="ico-prev"></span></a></li>
                     <li><a href="#">1</a></li>
@@ -81,49 +88,110 @@
                     <li><a href="#">5</a></li>
                     <li><a href="#"><span class="ico-next"></span></a></li>
                 </ul>
-            </div>
+            </div> --}}
             <div class="products-wrap">
                 <aside id="sidebar">
                     <div class="widget">
                         <h3>Products per page:</h3>
                         <fieldset>
-                            <input checked type="checkbox">
-                            <label>8</label>
-                            <input type="checkbox">
-                            <label>16</label>
-                            <input type="checkbox">
-                            <label>32</label>
+                            <form id="per-page-form" method="GET" action="{{ route('list_products') }}">
+                                @foreach (request()->except('per_page') as $key => $value)
+                                    @if (is_array($value))
+                                        @foreach ($value as $val)
+                                            <input type="hidden" name="{{ $key }}[]"
+                                                value="{{ $val }}">
+                                        @endforeach
+                                    @else
+                                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                    @endif
+                                @endforeach
+                                <input name="per_page" value="8" {{ request('per_page') == 8 ? 'checked' : '' }}
+                                    type="checkbox">
+                                <label>8</label>
+                                <input type="checkbox" name="per_page" value="16"
+                                    {{ request('per_page') == 16 ? 'checked' : '' }}>
+                                <label>16</label>
+                                <input type="checkbox" name="per_page" value="24"
+                                    {{ request('per_page') == 24 ? 'checked' : '' }}>
+                                <label>24</label>
+                            </form>
                         </fieldset>
                     </div>
-                    <!-- <div class="widget">
-      <h3>Sort by:</h3>
-      <fieldset>
-       <input checked type="checkbox">
-       <label>Popularity</label>
-       <input type="checkbox">
-       <label>Date</label>
-       <input type="checkbox">
-       <label>Price</label>
-      </fieldset>
-     </div> -->
                     <div class="widget">
                         <h3>Condition:</h3>
                         <fieldset>
-                            <input checked type="checkbox">
-                            <label>New</label>
-                            <input type="checkbox">
-                            <label>Used</label>
+                            <form id="condition-form" method="GET" action="{{ route('list_products') }}">
+                                @foreach (request()->except('condition') as $key => $value)
+                                    @if (is_array($value))
+                                        @foreach ($value as $val)
+                                            <input type="hidden" name="{{ $key }}[]"
+                                                value="{{ $val }}">
+                                        @endforeach
+                                    @else
+                                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                    @endif
+                                @endforeach
+                                <input name="condition[]" value="New"
+                                    {{ in_array('New', request('condition', [])) ? 'checked' : '' }} type="checkbox">
+                                <label>New</label>
+                                <input name="condition[]" value="Used"
+                                    {{ in_array('Used', request('condition', [])) ? 'checked' : '' }} type="checkbox">
+                                <label>Used</label>
+                            </form>
                         </fieldset>
                     </div>
-                    <div class="widget">
+                    {{-- <div class="widget">
                         <h3>Price range:</h3>
                         <fieldset>
                             <div id="price-range"></div>
                         </fieldset>
+                    </div> --}}
+                    <div class="widget">
+                        <h3>Price range:</h3>
+                        <fieldset>
+                            <form id="price-range-form" method="GET" action="{{ route('list_products') }}">
+                                @foreach (request()->except(['min_price', 'max_price']) as $key => $value)
+                                    @if (is_array($value))
+                                        @foreach ($value as $val)
+                                            <input type="hidden" name="{{ $key }}[]"
+                                                value="{{ $val }}">
+                                        @endforeach
+                                    @else
+                                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                    @endif
+                                @endforeach
+                                <input type="number" name="min_price" value="{{ request('min_price') ?? 500 }}"
+                                    placeholder="Min Price" style="padding: 0.5rem; margin-block: 0.25rem">
+                                <input type="number" name="max_price" value="{{ request('max_price') ?? 3500 }}"
+                                    placeholder="Max Price" style="padding: 0.5rem; margin-block: 0.25rem">
+                                <div class="products">
+
+                                    <button type="submit" class="btn-add"
+                                        style="width: 100%; margin:0; line-height: 20px">Apply</button>
+                                </div>
+                            </form>
+                        </fieldset>
                     </div>
+
                 </aside>
                 <div id="content">
                     <section class="products">
+                        @foreach ($products as $product)
+                            <article>
+                                <a href="{{ route('show_product', ['id' => $product->id]) }}"><img
+                                        src="{{ asset('storage/' . $product->image) }}" alt=""></a>
+                                <h3><a
+                                        href="{{ route('show_product', ['id' => $product->id]) }}">{{ $product->name }}</a>
+                                </h3>
+                                <h4><a
+                                        href="{{ route('show_product', ['id' => $product->id]) }}">${{ Illuminate\Support\Number::format($product->price) }}</a>
+                                </h4>
+                                <a href="{{ route('add_to_cart', ['item_id' => $product->id]) }}" class="btn-add">Add
+                                    to cart</a>
+                            </article>
+                        @endforeach
+
+                        {{--
                         <article>
                             <a href="product.html"><img
                                     src="./images/New_Fashion_Bohemian_Square_Pearl_Stud_Earring_Mascot_Ornaments.jpeg"
@@ -132,6 +200,7 @@
                             <h4><a href="product.html">$990.00</a></h4>
                             <a href="cart.html" class="btn-add">Add to cart</a>
                         </article>
+
                         <article>
                             <a href="product.html"><img src="./images/9736f881-f5f5-4e35-a007-3f2ad549b476.jpeg"
                                     alt=""></a>
@@ -139,6 +208,7 @@
                             <h4><a href="product.html">$1 200.00</a></h4>
                             <a href="cart.html" class="btn-add">Add to cart</a>
                         </article>
+
                         <article>
                             <a href="product.html"><img src="./images/734ad9e7-48c4-4b0a-adb7-f39e4c13710e.jpeg"
                                     alt=""></a>
@@ -146,6 +216,7 @@
                             <h4><a href="product.html">$2 650.00</a></h4>
                             <a href="cart.html" class="btn-add">Add to cart</a>
                         </article>
+
                         <article>
                             <a href="product.html"><img src="./images/Banquet Trendy Square Jewelry Set - earrings.jpeg"
                                     alt=""></a>
@@ -153,12 +224,14 @@
                             <h4><a href="product.html">$3 500.00</a></h4>
                             <a href="cart.html" class="btn-add">Add to cart</a>
                         </article>
+
                         <article>
                             <a href="product.html"><img src="./images/20240519_222606.jpg" alt=""></a>
                             <h3><a href="product.html">Lorem ipsum dolor</a></h3>
                             <h4><a href="product.html">$1 500.00</a></h4>
                             <a href="cart.html" class="btn-add">Add to cart</a>
                         </article>
+
                         <article>
                             <a href="product.html"><img src="./images/0b17123f-501d-4151-9ac5-f7f339777806.jpeg"
                                     alt=""></a>
@@ -166,12 +239,14 @@
                             <h4><a href="product.html">$3 200.00</a></h4>
                             <a href="cart.html" class="btn-add">Add to cart</a>
                         </article>
+
                         <article>
                             <a href="product.html"><img src="./images/20240519_220840.jpg" alt=""></a>
                             <h3><a href="product.html">Duis aute irure</a></h3>
                             <h4><a href="product.html">$2 650.00</a></h4>
                             <a href="cart.html" class="btn-add">Add to cart</a>
                         </article>
+
                         <article>
                             <a href="product.html"><img src="./images/23e62fe5-2bb0-4f33-8b06-dc37c444ffb4.jpeg"
                                     alt=""></a>
@@ -179,11 +254,12 @@
                             <h4><a href="product.html">$3 500.00</a></h4>
                             <a href="cart.html" class="btn-add">Add to cart</a>
                         </article>
+                         --}}
                     </section>
                 </div>
                 <!-- / content -->
             </div>
-            <div class="pagination">
+            {{-- <div class="pagination">
                 <ul>
                     <li><a href="#"><span class="ico-prev"></span></a></li>
                     <li><a href="#">1</a></li>
@@ -194,7 +270,9 @@
                     <li><a href="#">5</a></li>
                     <li><a href="#"><span class="ico-next"></span></a></li>
                 </ul>
-            </div>
+            </div> --}}
+
+            {{ $products->links('pagination::bootstrap-5') }}
         </div>
         <!-- / container -->
     </div>
@@ -250,6 +328,23 @@
     </script>
     <script src="{{ asset('js/plugins.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
+    <script>
+        document.querySelectorAll('input[name="per_page"]').forEach((el) => {
+            el.addEventListener('change', function() {
+                // Deselect all other checkboxes
+                document.querySelectorAll('input[name="per_page"]').forEach((checkbox) => {
+                    if (checkbox !== this) {
+                        checkbox.checked = false;
+                    }
+                });
+                // Submit the form
+                document.getElementById('per-page-form').submit();
+            });
+        });
+        document.getElementById('condition-form').addEventListener('change', function() {
+            this.submit();
+        });
+    </script>
 </body>
 
 </html>
